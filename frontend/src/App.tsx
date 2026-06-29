@@ -1,183 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect } from 'react';
+import { Routes, Route, useLocation, useSearchParams, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SEOWrapper } from './components/seo/SEOWrapper';
-import { Moon, Sun } from 'lucide-react';
 import { Footer } from './components/common/Footer';
-import { useAppStore } from './store/appStore';
+import { Navbar } from './components/common/Navbar';
 
-// Pages
-import { About } from './pages/About';
-import { PrivacyPolicy } from './pages/PrivacyPolicy';
-import { TermsOfService } from './pages/TermsOfService';
-
-// Tab 1 Components
-import { useHardwareMatcher } from './features/hardware-matcher/hooks/useHardwareMatcher';
-import { HardwareBuilder } from './features/hardware-matcher/components/HardwareBuilder';
-import { GPUSelector } from './features/hardware-matcher/components/GPUSelector';
-import { ModelSelector } from './features/hardware-matcher/components/ModelSelector';
-import { AutoRecommender } from './features/hardware-matcher/components/AutoRecommender';
-import { VRAMBarGraph } from './features/hardware-matcher/components/VRAMBarGraph';
-import { PerformanceEstimator } from './features/hardware-matcher/components/PerformanceEstimator';
-
-// Tab 2 Components
+// Eager load only the homepage and layout
+import { HomePage } from './pages/HomePage';
+import { HardwareAnalyzerLanding } from './pages/HardwareAnalyzerLanding';
+import { RigConfiguratorLanding } from './pages/RigConfiguratorLanding';
+import { CloudPricingLanding } from './pages/CloudPricingLanding';
+import { HardwareAnalyzerTool } from './features/hardware-matcher/components/HardwareAnalyzerTool';
+import { RigConfiguratorTool } from './features/hardware-matcher/components/RigConfiguratorTool';
 import { CostCalculatorTab } from './features/cost-calculator/components/CostCalculatorTab';
+import { BenchmarksTab } from './features/benchmarks/components/BenchmarksTab';
+
+// Lazy load all feature pages
+const BottleneckFinder = lazy(() => import('./features/hardware-matcher/components/BottleneckFinder').then(m => ({ default: m.BottleneckFinder })));
+const UpgradePlanner = lazy(() => import('./features/hardware-matcher/components/UpgradePlanner').then(m => ({ default: m.UpgradePlanner })));
+const InferenceSpeedEstimator = lazy(() => import('./features/hardware-matcher/components/InferenceSpeedEstimator').then(m => ({ default: m.InferenceSpeedEstimator })));
+
+const PowerCostCalculator = lazy(() => import('./features/hardware-matcher/components/PowerCostCalculator').then(m => ({ default: m.PowerCostCalculator })));
+const PCIeBandwidthChecker = lazy(() => import('./features/hardware-matcher/components/PCIeBandwidthChecker').then(m => ({ default: m.PCIeBandwidthChecker })));
+const ShareConfig = lazy(() => import('./features/hardware-matcher/components/ShareConfig').then(m => ({ default: m.ShareConfig })));
+
+const ModelComparison = lazy(() => import('./features/cost-calculator/components/ModelComparison').then(m => ({ default: m.ModelComparison })));
+const PriceHistory = lazy(() => import('./features/cost-calculator/components/PriceHistory').then(m => ({ default: m.PriceHistory })));
+const BudgetCalculator = lazy(() => import('./features/cost-calculator/components/BudgetCalculator').then(m => ({ default: m.BudgetCalculator })));
+const BatchVsRealtime = lazy(() => import('./features/cost-calculator/components/BatchVsRealtime').then(m => ({ default: m.BatchVsRealtime })));
+
+const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
+const TermsOfService = lazy(() => import('./pages/TermsOfService').then(m => ({ default: m.TermsOfService })));
+
+const TAB_TO_PATH: Record<string, string> = {
+  'home': '/',
+  'matcher': '/hardware-analyzer',
+  'matcher-tool': '/hardware-analyzer/tool',
+  'builder': '/rig-configurator',
+  'builder-tool': '/rig-configurator/tool',
+  'cloud': '/cloud-pricing',
+  'cloud-tool': '/cloud-pricing/tool',
+  'benchmarks': '/benchmarks',
+};
+
+const TOOL_TO_PATH: Record<string, Record<string, string>> = {
+  'matcher-tool': {
+    'bottleneck': '/hardware-analyzer/bottleneck',
+    'upgrade': '/hardware-analyzer/upgrade',
+    'speed': '/hardware-analyzer/speed',
+  },
+  'builder-tool': {
+    'power': '/rig-configurator/power',
+    'pcie': '/rig-configurator/pcie',
+    'share': '/rig-configurator/share',
+  },
+  'cloud-tool': {
+    'compare': '/cloud-pricing/compare',
+    'history': '/cloud-pricing/history',
+    'budget': '/cloud-pricing/budget',
+    'batch': '/cloud-pricing/batch',
+  },
+};
+
+const LegacyTabRedirect: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get('tab');
+  const tool = searchParams.get('tool');
+
+  if (tab) {
+    if (tool && TOOL_TO_PATH[tab]?.[tool]) {
+      return <Navigate to={TOOL_TO_PATH[tab][tool]} replace />;
+    }
+    if (TAB_TO_PATH[tab]) {
+      return <Navigate to={TAB_TO_PATH[tab]} replace />;
+    }
+  }
+
+  return <Navigate to="/" replace />;
+};
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isDark, setIsDark] = useState(true);
-
-  // Apply dark class to html element
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { activeTab, setActiveTab } = useAppStore();
-
-  // Sync URL to state initially, or if URL changes
-  useEffect(() => {
-    const tabParam = searchParams.get('tab');
-    if (tabParam && tabParam !== activeTab) {
-      setActiveTab(tabParam);
-    }
-  }, [searchParams, activeTab, setActiveTab]);
-
+  const location = useLocation();
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <Link to="/" className="flex-shrink-0">
-            <h1 className="text-lg md:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              GPURunner
-            </h1>
-          </Link>
-
-          <div className="flex items-center gap-4">
-            <nav className="hidden md:flex items-center p-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
-              <button 
-                onClick={() => { setActiveTab('matcher'); navigate('/?tab=matcher'); }}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'matcher' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
-              >
-                Hardware Analyzer
-              </button>
-              <button 
-                onClick={() => { setActiveTab('builder'); navigate('/?tab=builder'); }}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'builder' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
-              >
-                Rig Configurator
-              </button>
-              <button 
-                onClick={() => { setActiveTab('cloud'); navigate('/?tab=cloud'); }}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'cloud' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
-              >
-                Cloud Pricing
-              </button>
-            </nav>
-
-            <button
-              onClick={() => setIsDark(!isDark)}
-              className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
-              aria-label="Toggle Dark Mode"
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="flex-1 w-full mt-8">
-        {children}
+        <div className="max-w-6xl mx-auto p-6">
+          <AnimatePresence mode="sync">
+            <motion.div 
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.15 }}
+              className="space-y-6"
+            >
+              <Suspense fallback={
+                <div className="flex items-center justify-center min-h-[60vh]">
+                  <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              }>
+                {children}
+              </Suspense>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
 
       <Footer />
-    </div>
-  );
-};
-
-const CalculatorTabs: React.FC = () => {
-  const { activeTab } = useAppStore();
-  const activeTabIndex = activeTab === 'matcher' ? 0 : activeTab === 'builder' ? 1 : 2;
-
-  // Tab 1 State
-  const { 
-    request: hwRequest, 
-    updateRequest: updateHwRequest, 
-    result: hwResult,
-    hardwareItems,
-    addHardwareItem,
-    updateHardwareItem,
-    removeHardwareItem
-  } = useHardwareMatcher();
-
-  // Tab 2 State is now encapsulated in CostCalculatorTab, but we can leave the hook here if other things need it or we can just remove it from App.tsx since it's not used here anymore.
-  // Actually, I should remove it from here.
-
-  return (
-    <div className="max-w-6xl mx-auto p-6">
-      <AnimatePresence mode="wait">
-        {activeTabIndex === 0 ? (
-          <motion.div 
-            key="tab0"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-6">
-                <GPUSelector request={hwRequest} updateRequest={updateHwRequest} />
-                <ModelSelector request={hwRequest} updateRequest={updateHwRequest} />
-              </div>
-              <div className="space-y-6">
-                <VRAMBarGraph result={hwResult} />
-                <PerformanceEstimator result={hwResult} />
-              </div>
-            </div>
-          </motion.div>
-        ) : activeTabIndex === 1 ? (
-          <motion.div 
-            key="tab1"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-6">
-                <HardwareBuilder 
-                  hardwareItems={hardwareItems}
-                  addHardwareItem={addHardwareItem}
-                  updateHardwareItem={updateHardwareItem}
-                  removeHardwareItem={removeHardwareItem}
-                  totalVram={hwRequest.gpuVramGb}
-                />
-              </div>
-              <div className="space-y-6">
-                <VRAMBarGraph result={hwResult} />
-                <AutoRecommender baseHardware={hwRequest} />
-              </div>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div 
-            key="tab2"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            <CostCalculatorTab />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
@@ -193,41 +124,53 @@ const ScrollToTop = () => {
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <>
       <ScrollToTop />
       <Layout>
         <Routes>
-          <Route path="/" element={
-            <SEOWrapper>
-              <CalculatorTabs />
-            </SEOWrapper>
-          } />
-          {/* Legacy generic param routes, pointing to main app */}
-          <Route path="/hardware/:slug" element={
-            <SEOWrapper>
-              <CalculatorTabs />
-            </SEOWrapper>
-          } />
-          <Route path="/vram/:slug" element={
-            <SEOWrapper>
-              <CalculatorTabs />
-            </SEOWrapper>
-          } />
-          <Route path="/model/:slug" element={
-            <SEOWrapper>
-              <CalculatorTabs />
-            </SEOWrapper>
-          } />
-          
-          {/* New Pages */}
+          {/* Homepage */}
+          <Route path="/" element={<HomePage />} />
+
+          {/* Hardware Analyzer */}
+          <Route path="/hardware-analyzer" element={<HardwareAnalyzerLanding />} />
+          <Route path="/hardware-analyzer/tool" element={<HardwareAnalyzerTool />} />
+          <Route path="/hardware-analyzer/bottleneck" element={<BottleneckFinder />} />
+          <Route path="/hardware-analyzer/upgrade" element={<UpgradePlanner />} />
+          <Route path="/hardware-analyzer/speed" element={<InferenceSpeedEstimator />} />
+
+          {/* Rig Configurator */}
+          <Route path="/rig-configurator" element={<RigConfiguratorLanding />} />
+          <Route path="/rig-configurator/tool" element={<RigConfiguratorTool />} />
+          <Route path="/rig-configurator/power" element={<PowerCostCalculator />} />
+          <Route path="/rig-configurator/pcie" element={<PCIeBandwidthChecker />} />
+          <Route path="/rig-configurator/share" element={<ShareConfig />} />
+
+          {/* Cloud Pricing */}
+          <Route path="/cloud-pricing" element={<CloudPricingLanding />} />
+          <Route path="/cloud-pricing/tool" element={<CostCalculatorTab />} />
+          <Route path="/cloud-pricing/compare" element={<ModelComparison />} />
+          <Route path="/cloud-pricing/history" element={<PriceHistory />} />
+          <Route path="/cloud-pricing/budget" element={<BudgetCalculator />} />
+          <Route path="/cloud-pricing/batch" element={<BatchVsRealtime />} />
+
+          {/* Benchmarks */}
+          <Route path="/benchmarks" element={<BenchmarksTab />} />
+
+          {/* Static pages */}
           <Route path="/about" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
-          
-          <Route path="*" element={<CalculatorTabs />} />
+
+          {/* Legacy redirects */}
+          <Route path="/hardware/:slug" element={<Navigate to="/hardware-analyzer" replace />} />
+          <Route path="/vram/:slug" element={<Navigate to="/hardware-analyzer" replace />} />
+          <Route path="/model/:slug" element={<Navigate to="/hardware-analyzer" replace />} />
+
+          {/* Legacy query param redirect handler */}
+          <Route path="*" element={<LegacyTabRedirect />} />
         </Routes>
       </Layout>
-    </Router>
+    </>
   );
 };
 
