@@ -38,14 +38,14 @@ export const HardwareAnalyzerLanding: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-16 py-8">
       <Helmet>
-        <title>Hardware Analyzer — Check GPU Compatibility for LLMs | GPURunner</title>
+        <title>Hardware Analyzer — Check GPU Compatibility for LLMs | AIRigCheck</title>
         <meta name="description" content="Check if your GPU can run any LLM. Calculate exact VRAM requirements based on model parameters, quantization level, and context length." />
-        <link rel="canonical" href="https://gpurunner.com/hardware-analyzer" />
+        <link rel="canonical" href="https://airigcheck.com/hardware-analyzer" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
           "name": "GPU Hardware Analyzer",
-          "url": "https://gpurunner.com/hardware-analyzer",
+          "url": "https://airigcheck.com/hardware-analyzer",
           "description": "Check if your GPU can run any LLM. Calculate VRAM requirements based on model size, quantization, and context length.",
           "applicationCategory": "DeveloperApplication"
         })}</script>

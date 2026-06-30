@@ -38,7 +38,7 @@ export const useHardwareMatcher = () => {
     if (params.get('cfg')) {
       // Optional: use a toast library if available, for now just use a simple alert or let it be silent.
       // Since prompt says "Show a success toast", we can use a small state or console.log.
-      // GPURunner doesn't have a global toast yet, maybe I'll just use native alert or skip for now if no toast is setup.
+      // AIRigCheck doesn't have a global toast yet, maybe I'll just use native alert or skip for now if no toast is setup.
       // The prompt specifically says "Show a success toast 'Rig config loaded from shared link' when this happens."
       // Let me just dispatch a custom event or use an alert if no toast exists.
       alert('Rig config loaded from shared link');

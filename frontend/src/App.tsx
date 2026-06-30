@@ -83,7 +83,7 @@ const LegacyTabRedirect: React.FC = () => {
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 dark:bg-slate-950 transition-colors duration-300">
       <Navbar />
 
       <main className="flex-1 w-full mt-8">

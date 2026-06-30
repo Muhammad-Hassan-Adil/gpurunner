@@ -45,14 +45,14 @@ export const CloudPricingLanding: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-16 py-8">
       <Helmet>
-        <title>Cloud AI Pricing — Compare API Costs | GPURunner</title>
+        <title>Cloud AI Pricing — Compare API Costs | AIRigCheck</title>
         <meta name="description" content="Compare API costs across providers. Stop overpaying for token generation." />
-        <link rel="canonical" href="https://gpurunner.com/cloud-pricing" />
+        <link rel="canonical" href="https://airigcheck.com/cloud-pricing" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
           "name": "Cloud AI Pricing",
-          "url": "https://gpurunner.com/cloud-pricing",
+          "url": "https://airigcheck.com/cloud-pricing",
           "description": "Compare API costs across providers. Stop overpaying for token generation.",
           "applicationCategory": "DeveloperApplication"
         })}</script>

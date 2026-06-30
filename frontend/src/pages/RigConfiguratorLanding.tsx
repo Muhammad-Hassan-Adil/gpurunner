@@ -38,14 +38,14 @@ export const RigConfiguratorLanding: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-16 py-8">
       <Helmet>
-        <title>Rig Configurator — Build Your AI Workstation | GPURunner</title>
+        <title>Rig Configurator — Build Your AI Workstation | AIRigCheck</title>
         <meta name="description" content="Plan your multi-GPU setup. Optimize for PCIe lanes, power delivery, and total cost of ownership." />
-        <link rel="canonical" href="https://gpurunner.com/rig-configurator" />
+        <link rel="canonical" href="https://airigcheck.com/rig-configurator" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
           "name": "Rig Configurator",
-          "url": "https://gpurunner.com/rig-configurator",
+          "url": "https://airigcheck.com/rig-configurator",
           "description": "Plan your multi-GPU setup. Optimize for PCIe lanes, power delivery, and total cost of ownership.",
           "applicationCategory": "DeveloperApplication"
         })}</script>

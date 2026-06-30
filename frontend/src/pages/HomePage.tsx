@@ -50,14 +50,14 @@ export const HomePage: React.FC = () => {
   return (
     <div className="flex flex-col gap-24 pb-24">
       <Helmet>
-        <title>GPURunner — AI Hardware & Cloud Cost Optimizer</title>
+        <title>AIRigCheck — AI Hardware & Cloud Cost Optimizer</title>
         <meta name="description" content="The ultimate toolkit for AI engineers. Calculate VRAM requirements, build local rigs, and compare cloud API pricing." />
-        <link rel="canonical" href="https://gpurunner.com/" />
+        <link rel="canonical" href="https://airigcheck.com/" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
-          "name": "GPURunner — AI Hardware & Cloud Cost Optimizer",
-          "url": "https://gpurunner.com/",
+          "name": "AIRigCheck — AI Hardware & Cloud Cost Optimizer",
+          "url": "https://airigcheck.com/",
           "description": "The ultimate toolkit for AI engineers. Calculate VRAM requirements, build local rigs, and compare cloud API pricing.",
           "applicationCategory": "DeveloperApplication"
         })}</script>
@@ -65,7 +65,7 @@ export const HomePage: React.FC = () => {
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 -z-10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-indigo-50 to-violet-100 dark:from-slate-900 dark:to-slate-800 -z-10" />
         <div className="absolute top-0 w-full h-full bg-[url('/grid.svg')] opacity-[0.03] dark:opacity-[0.05] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-4 text-center">

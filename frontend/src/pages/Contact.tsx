@@ -22,7 +22,7 @@ export const Contact: React.FC = () => {
           email: form.email,
           subject: form.subject,
           message: form.message,
-          _subject: `GPURunner Contact: ${form.subject}`,
+          _subject: `AIRigCheck Contact: ${form.subject}`,
           _template: 'table',
         }),
       });
@@ -48,9 +48,9 @@ export const Contact: React.FC = () => {
       className="max-w-3xl mx-auto px-4 py-12"
     >
       <Helmet>
-        <title>Contact Us | GPURunner</title>
-        <meta name="description" content="Get in touch with the GPURunner team. Questions, feedback, or partnerships — we'd love to hear from you." />
-        <link rel="canonical" href="https://gpurunner.com/contact" />
+        <title>Contact Us | AIRigCheck</title>
+        <meta name="description" content="Get in touch with the AIRigCheck team. Questions, feedback, or partnerships — we'd love to hear from you." />
+        <link rel="canonical" href="https://airigcheck.com/contact" />
       </Helmet>
 
       <Link 

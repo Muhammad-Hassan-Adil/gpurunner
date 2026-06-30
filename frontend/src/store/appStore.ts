@@ -12,6 +12,6 @@ export const useAppStore = create<AppStore>()(
       isDark: true,
       setIsDark: (dark) => set({ isDark: dark }),
     }),
-    { name: 'gpurunner-ui' }
+    { name: 'airigcheck-ui' }
   )
 );

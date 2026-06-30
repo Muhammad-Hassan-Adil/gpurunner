@@ -180,7 +180,7 @@ export const ShareConfig: React.FC = () => {
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="https://gpurunner.com/rig-configurator/share?cfg=..."
+                placeholder="https://airigcheck.com/rig-configurator/share?cfg=..."
                 value={importUrl}
                 onChange={(e) => setImportUrl(e.target.value)}
                 className="flex-1 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"

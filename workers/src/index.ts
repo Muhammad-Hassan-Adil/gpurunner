@@ -19,7 +19,7 @@ export default {
 
     // Health check
     if (url.pathname === '/health') {
-      return new Response(JSON.stringify({ status: 'ok', service: 'gpurunner-api' }), {
+      return new Response(JSON.stringify({ status: 'ok', service: 'airigcheck-api' }), {
         headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
       });
     }
