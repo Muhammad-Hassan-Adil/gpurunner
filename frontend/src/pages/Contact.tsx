@@ -14,7 +14,7 @@ export const Contact: React.FC = () => {
     setStatus('sending');
     
     try {
-      const response = await fetch('https://formsubmit.co/ajax/leonmaverik2@gmail.com', {
+      const response = await fetch('https://formsubmit.co/ajax/support@airigcheck.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
@@ -140,7 +140,7 @@ export const Contact: React.FC = () => {
             {status === 'error' && (
               <div className="flex items-center gap-2 text-red-500 text-sm bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
                 <AlertCircle size={16} />
-                Something went wrong. Please try again or email us directly at leonmaverik2@gmail.com
+                Something went wrong. Please try again or email us directly at support@airigcheck.com
               </div>
             )}
 
@@ -161,7 +161,7 @@ export const Contact: React.FC = () => {
       </Card>
 
       <div className="text-center mt-6 text-sm text-slate-400">
-        Or email directly: <a href="mailto:leonmaverik2@gmail.com" className="text-blue-500 hover:underline">leonmaverik2@gmail.com</a>
+        Or email directly: <a href="mailto:support@airigcheck.com" className="text-blue-500 hover:underline">support@airigcheck.com</a>
       </div>
     </motion.div>
   );
